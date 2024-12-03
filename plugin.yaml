@@ -1,0 +1,6 @@
+plugin:
+    name: 'logingrupa.searchoffersshopaholic::lang.plugin.name'
+    description: 'logingrupa.searchoffersshopaholic::lang.plugin.description'
+    author: Logingrupa
+    icon: oc-icon-adjust
+    homepage: ''

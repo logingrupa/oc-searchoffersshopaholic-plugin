@@ -1,0 +1,9 @@
+{
+  "name": "logingrupa/searchoffersshopaholic-plugin",
+  "type": "october-plugin",
+  "description": "October CMS Plugin extending Lovata.Shopaholic functionality, adding serch functionality for offers.",
+  "license": "GPL-3.0-only",
+  "require": {
+    "composer/installers": "~1.0"
+  }
+}
