@@ -8,7 +8,7 @@ use October\Rain\Database\Updates\Migration;
  * Class UpdateTableProduct
  * @package Lovata\SearchShopaholic\Updates
  */
-class UpdateTableProduct extends Migration
+class UpdateTableOffersAddSearch extends Migration
 {
     /**
      * Apply migration
