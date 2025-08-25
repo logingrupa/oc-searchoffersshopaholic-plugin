@@ -1,5 +1,6 @@
 <?php namespace Logingrupa\SearchOffersShopaholic\Classes\Event;
 
+use App;
 use Lovata\Shopaholic\Models\Offer;
 use Lovata\Shopaholic\Classes\Collection\OfferCollection;
 use Lovata\SearchShopaholic\Classes\Helper\SearchHelper;
@@ -14,8 +15,9 @@ class OfferModelHandler
     {
 
         Offer::extend(function ($obModel) {
-            /** @var Brand $obModel */
-
+            /** @var Offer $obModel */
+            $obModel->fillable[] = 'search_synonym';
+            $obModel->fillable[] = 'search_content';
         });
         OfferCollection::extend(function ($obCollection) {
             /** @var OfferCollection $obCollection */
@@ -25,7 +27,9 @@ class OfferModelHandler
                 $arSettings = Settings::getValue('offer_search_by');
 
                 /** @var SearchHelper $obSearchHelper */
-                $obSearchHelper = app(SearchHelper::class,[Offer::class]);
+                $obSearchHelper = App::make(SearchHelper::class, [
+                    'sModel' => Offer::class
+                ]);
                 $arElementIDList = $obSearchHelper->result($sSearch,$arSettings);
 
                 return $obCollection->applySorting($arElementIDList);
