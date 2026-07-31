@@ -2,4 +2,5 @@
     - Initialize plugin.
 1.0.2:
     - Added search_synonym field to lovata_shopaholic_offers table.
-    - update_table_offers.php
+    - update_table_offers.php1.0.3:
+    - 'TranslatableSearchHelper - case-insensitive translated field search, bound parameters, base table fallback for missing translations'
