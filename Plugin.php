@@ -5,6 +5,8 @@ use System\Classes\PluginBase;
 
 use LoginGrupa\SearchOffersShopaholic\Classes\Event\OfferModelHandler;
 use LoginGrupa\SearchOffersShopaholic\Classes\Event\ExtendFieldHandler;
+use Logingrupa\SearchOffersShopaholic\Classes\Helper\TranslatableSearchHelper;
+use Lovata\SearchShopaholic\Classes\Helper\SearchHelper;
 
 /**
  * Class Plugin
@@ -30,6 +32,10 @@ class Plugin extends PluginBase
      */
     public function boot()
     {
+        //Every search call site resolves SearchHelper from the container:
+        //locale-aware subclass fixes case sensitivity + missing translation fallback
+        $this->app->bind(SearchHelper::class, TranslatableSearchHelper::class);
+
         $this->addEventListener();
     }
 
