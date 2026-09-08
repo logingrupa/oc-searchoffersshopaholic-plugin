@@ -83,7 +83,7 @@ class OfferList extends SortingElementList
      *
      * @return OfferCollection
      */
-    public function make($arElementIDList = null)
+    public function makeCollection($arElementIDList = null)
     {
         return OfferCollection::make($arElementIDList);
     }
