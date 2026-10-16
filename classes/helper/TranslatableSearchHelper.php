@@ -127,6 +127,29 @@ class TranslatableSearchHelper extends SearchHelper
     }
 
     /**
+     * Parent matches each search word as a "%word%i" regex and escapes only parentheses,
+     * so a typed * + ? [ { \ or % fails to compile; quote the rest, parent adds the \( \)
+     * @param array $arValueWordList
+     * @param int   $iMaxLength
+     * @param int   $iMinLength
+     * @return int
+     */
+    protected function calculateWeight($arValueWordList, $iMaxLength, $iMinLength)
+    {
+        $arWordList = $this->arWordList;
+        $this->arWordList = array_map(
+            fn ($sWord) => str_replace(['\(', '\)'], ['(', ')'], preg_quote($sWord, '%')),
+            $arWordList
+        );
+
+        try {
+            return parent::calculateWeight($arValueWordList, $iMaxLength, $iMinLength);
+        } finally {
+            $this->arWordList = $arWordList;
+        }
+    }
+
+    /**
      * Base translate table query for the active locale and searched model
      * @param string $sFieldName
      * @return \Illuminate\Database\Query\Builder

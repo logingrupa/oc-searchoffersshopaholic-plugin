@@ -22,7 +22,9 @@ Lovata.OrdersShopaholic, Lovata.SearchShopaholic. README.MD documents usage.
 
 ## Quality gates
 
-No working automated gate - tests do not exist and lint does not cover this dir.
+Own phpunit.xml: run `php ../../../vendor/bin/phpunit` from the plugin dir. tests/unit covers
+the search word weighting (regex quoting of typed words) without a database; there is no
+integration suite, so search results are checked over HTTP on nc.test (Larajax onAjax POST).
 composer lint does NOT cover this plugin (phpcs.xml scope excludes plugins/logingrupa) - fix
 phpcs.xml scope or lint manually; `vendor/bin/phpcs --standard=phpcs.xml <plugin path>` won't
 work either since the ruleset pins files; note as known gap.
