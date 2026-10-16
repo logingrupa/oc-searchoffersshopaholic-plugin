@@ -7,3 +7,5 @@
     - 'TranslatableSearchHelper - case-insensitive translated field search, bound parameters, base table fallback for missing translations'
 1.0.4:
   - 'The element-collection factory on the list component is renamed to makeCollection(). Larajax 3.0 adds a static make() factory to the view-component trait that Cms\Classes\ComponentBase uses, so a component declaring its own non-static make() is a fatal error at class declaration. Twig call sites become Alias.makeCollection(...).'
+1.0.5:
+  - 'A search that holds a regex character such as * + ? [ or % no longer fails. Word weighting ignores letter case for Latvian and Russian letters too, and a word shorter than the minimum length no longer counts.'
