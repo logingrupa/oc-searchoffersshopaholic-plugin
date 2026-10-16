@@ -127,8 +127,9 @@ class TranslatableSearchHelper extends SearchHelper
     }
 
     /**
-     * Parent matches each search word as a "%word%i" regex and escapes only parentheses,
-     * so a typed * + ? [ { \ or % fails to compile; quote the rest, parent adds the \( \)
+     * Parent weights, but the parent builds "%word%i" from raw input: a typed * + ? [ { \ %
+     * fails to compile, "i" folds only ASCII case and the minimum length is read off the
+     * escaped word. Here each word is a quoted UTF-8 pattern held to its typed length.
      * @param array $arValueWordList
      * @param int   $iMaxLength
      * @param int   $iMinLength
@@ -136,17 +137,53 @@ class TranslatableSearchHelper extends SearchHelper
      */
     protected function calculateWeight($arValueWordList, $iMaxLength, $iMinLength)
     {
-        $arWordList = $this->arWordList;
-        $this->arWordList = array_map(
-            fn ($sWord) => str_replace(['\(', '\)'], ['(', ')'], preg_quote($sWord, '%')),
-            $arWordList
-        );
+        $arPatternList = $this->getWordPatternList($iMinLength);
+        $iWordCount = count($this->arWordList);
+        $iWeight = 0;
+        $iPrevWordWeight = 0;
+        $arMatchedWordList = [];
+        foreach ($arValueWordList as $iKey => $sWord) {
+            $iWordWeight = 0;
+            foreach ($arPatternList as $iSearchKey => $sPattern) {
+                if ($sPattern === null || preg_match($sPattern, $sWord) !== 1) {
+                    continue;
+                }
 
-        try {
-            return parent::calculateWeight($arValueWordList, $iMaxLength, $iMinLength);
-        } finally {
-            $this->arWordList = $arWordList;
+                $iWordWeight = ($iMaxLength - $iKey) * ($iWordCount - $iSearchKey);
+                if (!in_array($iSearchKey, $arMatchedWordList)) {
+                    $arMatchedWordList[] = $iSearchKey;
+                    $iWordWeight = $iWordWeight * $iWordCount;
+                }
+
+                if ($iPrevWordWeight > 0) {
+                    $iWordWeight = $iWordWeight * $iPrevWordWeight;
+                }
+
+                break;
+            }
+
+            $iWeight += $iWordWeight;
+            $iPrevWordWeight = $iWordWeight;
         }
+
+        return $iWeight;
+    }
+
+    /**
+     * One case-insensitive UTF-8 pattern per search word; null for a word that cannot weigh
+     * (shorter than the minimum, or bytes that are not UTF-8 and would fail the u flag)
+     * @param int $iMinLength
+     * @return array
+     */
+    protected function getWordPatternList($iMinLength): array
+    {
+        $arPatternList = [];
+        foreach ($this->arWordList as $iSearchKey => $sSearchWord) {
+            $bCanWeigh = mb_check_encoding($sSearchWord, 'UTF-8') && mb_strlen($sSearchWord) >= $iMinLength;
+            $arPatternList[$iSearchKey] = $bCanWeigh ? '%' . preg_quote($sSearchWord, '%') . '%iu' : null;
+        }
+
+        return $arPatternList;
     }
 
     /**
